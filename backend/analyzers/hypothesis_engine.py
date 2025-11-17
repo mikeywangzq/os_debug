@@ -227,12 +227,10 @@ class HypothesisEngine:
         if not trapframe or not trapframe.get('exception_info'):
             return False
 
-        # Check for page fault
+        # Check for page fault (x86 "Page Fault" or RISC-V "Load/Store Page Fault")
         exception = trapframe['exception_info']
-        is_page_fault = (
-            exception.get('trap_name') == 'Page Fault' or
-            exception.get('description', '').lower().find('page fault') != -1
-        )
+        trap_desc = (exception.get('trap_name', '') or exception.get('description', '')).lower()
+        is_page_fault = 'page fault' in trap_desc
 
         if not is_page_fault:
             return False
