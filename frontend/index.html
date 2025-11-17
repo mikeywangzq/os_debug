@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Debugging Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 OS Debugging Assistant</h1>
+            <p class="subtitle">Intelligent analysis for xv6, Pintos, and JOS debugging</p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-header">
+                    <h2>Input Debugging Information</h2>
+                    <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                </div>
+
+                <div class="input-controls">
+                    <p class="hint">
+                        Paste your debugging output below (GDB backtrace, register dump, trapframe, page table dump, etc.)
+                    </p>
+                </div>
+
+                <textarea
+                    id="debugInput"
+                    placeholder="Paste your GDB output, trapframe dump, or page table information here...
+
+Example inputs:
+- GDB backtrace: bt
+- GDB registers: info registers
+- Trapframe dump from kernel crash
+- Page table mappings
+
+The analyzer will automatically detect what type of information you've provided."
+                    rows="20"
+                ></textarea>
+
+                <div class="button-group">
+                    <button id="analyzeBtn" class="btn btn-primary">
+                        <span class="btn-text">Analyze</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                    <button id="exampleBtn" class="btn btn-secondary">Load Example</button>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-header">
+                    <h2>Analysis Results</h2>
+                    <button id="copyBtn" class="btn btn-secondary" style="display: none;">Copy Report</button>
+                </div>
+
+                <div id="outputArea">
+                    <div class="placeholder">
+                        <p>👈 Enter debugging information and click "Analyze" to see results</p>
+                        <p class="placeholder-hint">The assistant will:</p>
+                        <ul>
+                            <li>Analyze GDB backtraces and register values</li>
+                            <li>Decode trapframe/exception information</li>
+                            <li>Check page table configurations</li>
+                            <li>Generate hypotheses about the root cause</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built for OS students | Supports x86-32, x86-64, and RISC-V architectures</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

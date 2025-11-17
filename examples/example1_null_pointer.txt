@@ -1,0 +1,38 @@
+Example 1: Null Pointer Dereference in xv6-riscv
+
+This is a common bug where a kernel pointer is NULL and gets dereferenced.
+
+GDB Output:
+------------
+(gdb) bt
+#0  0x0000000080002a9e in panic (s=0x80008308 "kerneltrap") at kernel/printf.c:127
+#1  0x0000000080002630 in kerneltrap () at kernel/trap.c:141
+#2  0x0000000080003456 in mycpu () at kernel/proc.c:67
+#3  0x0000000080001c3a in usertrap () at kernel/trap.c:67
+#4  0x0000000000000000 in ?? ()
+
+(gdb) info registers
+ra             0x80002630       0x80002630 <kerneltrap+54>
+sp             0x80009ac0       0x80009ac0
+gp             0x0      0x0
+tp             0x0      0x0
+t0             0x726b   0x726b
+t1             0x80008308       0x80008308
+t2             0x6c     0x6c
+s0             0x80009ae0       0x80009ae0
+s1             0x0      0x0
+a0             0x80008308       0x80008308
+a1             0x80009b18       0x80009b18
+a2             0x1      0x1
+a3             0x0      0x0
+a4             0x726b657   0x726b657
+a5             0x726b   0x726b
+a6             0x1      0x1
+a7             0x0      0x0
+
+Trapframe:
+----------
+scause 0x000000000000000d
+stval 0x0000000000000010
+sepc=0x0000000080003456 ra=0x0000000080001c3a
+sp=0x80009ac0
