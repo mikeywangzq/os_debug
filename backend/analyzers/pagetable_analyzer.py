@@ -1,4 +1,4 @@
-"""Analyzer for page table dumps."""
+"""页表转储分析器"""
 
 from typing import Dict, List
 import sys
@@ -10,19 +10,23 @@ from parsers.pagetable_parser import PageTableParser
 
 
 class PageTableAnalyzer:
-    """Analyze page table dumps and check for common errors."""
+    """分析页表转储并检查常见错误"""
 
     def __init__(self):
         self.parser = PageTableParser()
 
     def analyze(self, text: str) -> Dict:
         """
-        Analyze page table dump.
+        分析页表转储
 
-        Returns dict with:
-        - mappings (list of VA->PA mappings)
-        - visualization
-        - findings (errors/warnings)
+        参数:
+            text: 页表转储文本
+
+        返回:
+            包含以下键的字典:
+            - mappings: VA->PA 映射列表
+            - visualization: 可视化输出
+            - findings: 错误/警告列表
         """
         result = {
             'mappings': [],

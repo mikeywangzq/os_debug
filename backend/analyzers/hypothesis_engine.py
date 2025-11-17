@@ -1,4 +1,4 @@
-"""Hypothesis Engine - Integrates all analyzers to generate hypotheses."""
+"""假设引擎 - 集成所有分析器生成调试假设"""
 
 from typing import Dict, List
 import sys
@@ -13,20 +13,33 @@ from analyzers.pagetable_analyzer import PageTableAnalyzer
 
 class HypothesisEngine:
     """
-    Intelligent hypothesis engine that combines all analyzers
-    to generate prioritized hypotheses about debugging issues.
+    智能假设引擎
+
+    结合所有分析器，生成关于调试问题的优先级排序假设
+    这是整个系统的核心，负责关联不同来源的信息并推断根本原因
     """
 
     def __init__(self):
+        """初始化所有分析器"""
         self.gdb_analyzer = GDBAnalyzer()
         self.trapframe_analyzer = TrapframeAnalyzer()
         self.pagetable_analyzer = PageTableAnalyzer()
 
     def analyze(self, text: str) -> Dict:
         """
-        Main analysis entry point.
+        主要分析入口点
 
-        Runs all analyzers and generates a comprehensive report with hypotheses.
+        参数:
+            text: 调试输出文本（可包含 GDB、陷阱帧、页表等信息）
+
+        返回:
+            包含以下内容的综合报告:
+            - summary: 执行摘要
+            - hypotheses: 按优先级排序的假设列表
+            - gdb_analysis: GDB 分析结果
+            - trapframe_analysis: 陷阱帧分析结果
+            - pagetable_analysis: 页表分析结果
+            - all_findings: 所有发现问题的汇总
         """
         result = {
             'gdb_analysis': None,

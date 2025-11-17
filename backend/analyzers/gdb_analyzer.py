@@ -1,29 +1,33 @@
-"""Analyzer for GDB output."""
+"""GDB 输出分析器"""
 
 from typing import Dict, List, Optional
 import sys
 import os
 
-# Add parent directory to path for imports
+# 将父目录添加到路径以便导入
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from parsers.gdb_parser import GDBParser
 
 
 class GDBAnalyzer:
-    """Analyze GDB output and provide insights."""
+    """分析 GDB 输出并提供洞察"""
 
     def __init__(self):
         self.parser = GDBParser()
 
     def analyze(self, text: str) -> Dict:
         """
-        Analyze GDB output (backtrace, registers, etc.).
+        分析 GDB 输出（回溯、寄存器等）
 
-        Returns a dict with:
-        - backtrace_analysis
-        - register_analysis
-        - findings (list of issues/insights)
+        参数:
+            text: GDB 输出文本
+
+        返回:
+            包含以下键的字典:
+            - backtrace_analysis: 回溯分析结果
+            - register_analysis: 寄存器分析结果
+            - findings: 发现的问题/洞察列表
         """
         result = {
             'backtrace_analysis': None,
@@ -32,21 +36,21 @@ class GDBAnalyzer:
             'arch': 'unknown'
         }
 
-        # Detect architecture
+        # 检测架构类型
         arch = self.parser.detect_architecture(text)
         result['arch'] = arch
 
-        # Parse and analyze backtrace
+        # 解析并分析回溯
         backtrace = self.parser.parse_backtrace(text)
         if backtrace:
             result['backtrace_analysis'] = self._analyze_backtrace(backtrace)
 
-        # Parse and analyze registers
+        # 解析并分析寄存器
         registers = self.parser.parse_registers(text, arch)
         if registers:
             result['register_analysis'] = self._analyze_registers(registers, arch)
 
-        # Collect all findings
+        # 收集所有发现
         if result['backtrace_analysis']:
             result['findings'].extend(result['backtrace_analysis'].get('findings', []))
         if result['register_analysis']:
@@ -55,7 +59,11 @@ class GDBAnalyzer:
         return result
 
     def _analyze_backtrace(self, backtrace: List[Dict]) -> Dict:
-        """Analyze backtrace for common patterns."""
+        """
+        分析回溯中的常见模式
+
+        检测 panic、断言失败等关键模式
+        """
         analysis = {
             'frames': [],
             'findings': [],
@@ -85,7 +93,7 @@ class GDBAnalyzer:
 
             analysis['frames'].append(frame_info)
 
-        # Check for panic/assert patterns
+        # 检查 panic/断言模式
         function_names = [f['function'] for f in backtrace]
 
         if 'panic' in function_names:
@@ -124,7 +132,11 @@ class GDBAnalyzer:
         return analysis
 
     def _analyze_registers(self, registers: Dict[str, str], arch: str) -> Dict:
-        """Analyze register values for suspicious patterns."""
+        """
+        分析寄存器值中的可疑模式
+
+        检测空指针、无效指针等异常值
+        """
         analysis = {
             'registers': {},
             'findings': [],

@@ -1,4 +1,4 @@
-"""Analyzer for trapframe/exception frame dumps."""
+"""陷阱帧/异常帧转储分析器"""
 
 from typing import Dict, List
 import sys
@@ -10,19 +10,23 @@ from parsers.trapframe_parser import TrapframeParser
 
 
 class TrapframeAnalyzer:
-    """Analyze trapframe dumps and provide insights."""
+    """分析陷阱帧转储并提供洞察"""
 
     def __init__(self):
         self.parser = TrapframeParser()
 
     def analyze(self, text: str) -> Dict:
         """
-        Analyze trapframe dump.
+        分析陷阱帧转储
 
-        Returns dict with:
-        - exception_info
-        - error_code_analysis
-        - findings
+        参数:
+            text: 陷阱帧转储文本
+
+        返回:
+            包含以下键的字典:
+            - exception_info: 异常信息
+            - error_code_analysis: 错误代码分析
+            - findings: 发现的问题列表
         """
         result = {
             'exception_info': None,
