@@ -71,17 +71,24 @@ class TrapframeParser:
 
         # Extract numeric values
         def extract_field(field_name: str) -> Optional[str]:
-            # Pattern: field_name = 0x... or field_name: 0x...
-            pattern = rf'{field_name}\s*[=:]\s*(0x[0-9a-fA-F]+|\d+)'
+            # Pattern: field_name = 0x... or field_name: 0x... or field_name 0x... (space-separated)
+            # Also match hex numbers without 0x prefix (common in x86 dumps)
+            pattern = rf'{field_name}\s*[=:]?\s*(0x[0-9a-fA-F]+|[0-9a-fA-F]+)'
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
-                return match.group(1)
+                value = match.group(1)
+                # Normalize: add 0x prefix if not present and looks like hex
+                if not value.startswith('0x') and re.match(r'^[0-9a-fA-F]+$', value):
+                    # Check if it's actually hex (contains a-f) or just decimal
+                    if any(c in 'abcdefABCDEF' for c in value):
+                        return '0x' + value
+                return value
             return None
 
         if arch == 'x86_32' or arch == 'x86_64':
             # x86 trapframe fields
-            trapframe['trap_no'] = extract_field(r'trap(?:no)?')
-            trapframe['err_code'] = extract_field(r'err(?:_?code)?')
+            trapframe['trap_no'] = extract_field(r'\btrap(?:no)?\b')
+            trapframe['err_code'] = extract_field(r'\berr(?:_?code)?\b')
             trapframe['eip'] = extract_field(r'e?ip')
             trapframe['cs'] = extract_field(r'cs')
             trapframe['eflags'] = extract_field(r'eflags')

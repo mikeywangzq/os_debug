@@ -15,6 +15,39 @@
 
 ---
 
+### 🔥 v2.0 新功能：实时 GDB 集成
+
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="https://img.icons8.com/fluency/96/connection-sync.png" width="80"/>
+<h4>实时连接</h4>
+<p>直接连接到运行中的 GDB 会话</p>
+</td>
+<td width="50%" align="center">
+<img src="https://img.icons8.com/fluency/96/speed.png" width="80"/>
+<h4>自动分析</h4>
+<p>崩溃时自动捕获并分析</p>
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+<img src="https://img.icons8.com/fluency/96/bug.png" width="80"/>
+<h4>交互式调试</h4>
+<p>设置断点、单步执行、查看状态</p>
+</td>
+<td width="50%" align="center">
+<img src="https://img.icons8.com/fluency/96/real-time-sync.png" width="80"/>
+<h4>实时监控</h4>
+<p>WebSocket 推送调试信息</p>
+</td>
+</tr>
+</table>
+
+**[📖 查看实时 GDB 使用指南](docs/GDB_INTEGRATION_GUIDE.md)** | **[🏗️ 技术设计文档](docs/GDB_INTEGRATION_DESIGN.md)**
+
+---
+
 </div>
 
 ## 🎯 为什么需要 OS 调试助手？
@@ -164,6 +197,32 @@ python app.py
 ```
 🌐 http://localhost:5000
 ```
+
+**步骤 6：测试实时 GDB 功能（v2.0 新增）**
+```bash
+# 测试 GDB 集成
+python3 test_gdb_integration.py
+
+# 确保系统已安装 GDB
+gdb --version
+
+# 对于 RISC-V/ARM 等架构，可能需要
+apt-get install gdb-multiarch
+```
+
+**可选：启用 AI 增强**
+```bash
+# 安装 AI 依赖（可选）
+pip install openai  # 或 anthropic
+
+# 设置 API 密钥
+export OPENAI_API_KEY="your-key-here"
+export ENABLE_AI=true
+
+# 重启服务器
+python app.py
+```
+查看 [AI_SETUP.md](AI_SETUP.md) 了解详细配置。
 
 </details>
 
@@ -508,7 +567,8 @@ python3 test_analyzer.py
 - ✅ GDB、陷阱帧、页表分析
 - ✅ x86 和 RISC-V 支持
 - ✅ 基于 Web 的界面
-- ✅ 假设引擎
+- ✅ 基于规则的假设引擎
+- ✅ **可选** AI 增强分析（GPT-4/Claude）
 
 ### 🎯 V2.0（计划中）
 - [ ] 实时 GDB 集成（通过 MI 协议）

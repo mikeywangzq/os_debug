@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OS Debugging Assistant</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Socket.IO for real-time communication -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -13,7 +15,15 @@
             <p class="subtitle">Intelligent analysis for xv6, Pintos, and JOS debugging</p>
         </header>
 
-        <div class="main-content">
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <button class="tab-btn active" data-tab="analysis">📝 Static Analysis</button>
+            <button class="tab-btn" data-tab="realtime">⚡ Real-time GDB</button>
+        </div>
+
+        <!-- Static Analysis Tab -->
+        <div class="tab-content active" id="analysis-tab">
+            <div class="main-content">
             <div class="input-section">
                 <div class="section-header">
                     <h2>Input Debugging Information</h2>
@@ -69,12 +79,91 @@ The analyzer will automatically detect what type of information you've provided.
                 </div>
             </div>
         </div>
+        </div>
+        <!-- End Static Analysis Tab -->
+
+        <!-- Real-time GDB Tab -->
+        <div class="tab-content" id="realtime-tab">
+            <div class="realtime-container">
+                <!-- GDB Connection Panel -->
+                <div class="gdb-control-panel">
+                    <div class="section-header">
+                        <h2>GDB Connection</h2>
+                        <div class="status-indicator" id="gdbStatus">
+                            <span class="status-dot disconnected"></span>
+                            <span class="status-text">Disconnected</span>
+                        </div>
+                    </div>
+
+                    <div class="connection-controls">
+                        <div class="input-group">
+                            <label for="gdbTarget">Target (executable/remote):</label>
+                            <input
+                                type="text"
+                                id="gdbTarget"
+                                placeholder="e.g., localhost:1234 or /path/to/program"
+                                value="localhost:1234"
+                            />
+                        </div>
+
+                        <div class="button-group">
+                            <button id="connectGdbBtn" class="btn btn-primary">Connect</button>
+                            <button id="disconnectGdbBtn" class="btn btn-secondary" disabled>Disconnect</button>
+                        </div>
+
+                        <div class="quick-actions" style="display: none;" id="quickActions">
+                            <h3>Quick Actions</h3>
+                            <div class="button-group">
+                                <button class="btn btn-action" id="continueBtn">Continue</button>
+                                <button class="btn btn-action" id="stepOverBtn">Step Over</button>
+                                <button class="btn btn-action" id="stepIntoBtn">Step Into</button>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn btn-action" id="getBacktraceBtn">Get Backtrace</button>
+                                <button class="btn btn-action" id="getRegistersBtn">Get Registers</button>
+                            </div>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    id="breakpointLocation"
+                                    placeholder="Breakpoint location (e.g., panic, main.c:42)"
+                                />
+                                <button class="btn btn-action" id="setBreakpointBtn">Set Breakpoint</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Output Area -->
+                <div class="gdb-output-section">
+                    <div class="section-header">
+                        <h2>Live Output</h2>
+                        <button id="clearOutputBtn" class="btn btn-secondary">Clear</button>
+                    </div>
+
+                    <div id="realtimeOutput" class="realtime-output">
+                        <div class="placeholder">
+                            <p>👈 Connect to GDB to see real-time debugging information</p>
+                            <p class="placeholder-hint">Features:</p>
+                            <ul>
+                                <li>Automatic crash detection and analysis</li>
+                                <li>Real-time backtrace and register monitoring</li>
+                                <li>Interactive debugging commands</li>
+                                <li>Breakpoint management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Real-time GDB Tab -->
 
         <footer>
             <p>Built for OS students | Supports x86-32, x86-64, and RISC-V architectures</p>
         </footer>
     </div>
 
+    <script src="gdb_client.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

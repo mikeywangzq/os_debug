@@ -10,17 +10,35 @@ from analyzers.gdb_analyzer import GDBAnalyzer
 from analyzers.trapframe_analyzer import TrapframeAnalyzer
 from analyzers.pagetable_analyzer import PageTableAnalyzer
 
+# 可选的 AI agent
+try:
+    from analyzers.ai_agent import AIDebugAgent
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+
 
 class HypothesisEngine:
     """
     Intelligent hypothesis engine that combines all analyzers
     to generate prioritized hypotheses about debugging issues.
+
+    支持可选的 AI 增强功能。
     """
 
-    def __init__(self):
+    def __init__(self, enable_ai: bool = False):
         self.gdb_analyzer = GDBAnalyzer()
         self.trapframe_analyzer = TrapframeAnalyzer()
         self.pagetable_analyzer = PageTableAnalyzer()
+
+        # 可选的 AI agent
+        self.ai_agent = None
+        if enable_ai and AI_AVAILABLE:
+            self.ai_agent = AIDebugAgent()
+            if self.ai_agent.enabled:
+                print("✓ AI 增强已启用")
+            else:
+                self.ai_agent = None
 
     def analyze(self, text: str) -> Dict:
         """
@@ -70,6 +88,14 @@ class HypothesisEngine:
 
         # Generate executive summary
         result['summary'] = self._generate_summary(result)
+
+        # 可选：使用 AI 增强分析
+        if self.ai_agent:
+            try:
+                result = self.ai_agent.enhance_analysis(result, text)
+            except Exception as e:
+                print(f"AI 增强失败: {e}")
+                # 继续使用基础分析结果
 
         return result
 
@@ -201,12 +227,10 @@ class HypothesisEngine:
         if not trapframe or not trapframe.get('exception_info'):
             return False
 
-        # Check for page fault
+        # Check for page fault (x86 "Page Fault" or RISC-V "Load/Store Page Fault")
         exception = trapframe['exception_info']
-        is_page_fault = (
-            exception.get('trap_name') == 'Page Fault' or
-            exception.get('description', '').lower().find('page fault') != -1
-        )
+        trap_desc = (exception.get('trap_name', '') or exception.get('description', '')).lower()
+        is_page_fault = 'page fault' in trap_desc
 
         if not is_page_fault:
             return False
