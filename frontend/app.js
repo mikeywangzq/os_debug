@@ -150,8 +150,23 @@ function displayResults(result) {
     if (result.summary) {
         html += `
             <div class="summary-box">
-                <h3>Summary</h3>
+                <h3>摘要</h3>
                 <p>${escapeHtml(result.summary)}</p>
+            </div>
+        `;
+    }
+
+    // AI Insights (if enabled)
+    if (result.ai_enabled && result.ai_insights) {
+        html += `
+            <div class="ai-insights-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: white; margin-bottom: 15px;">🤖 AI 深度分析</h3>
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 6px; white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;">
+                    ${escapeHtml(result.ai_insights.explanation)}
+                </div>
+                <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.9;">
+                    由 ${result.ai_insights.model} 提供支持
+                </p>
             </div>
         `;
     }

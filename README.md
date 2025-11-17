@@ -165,6 +165,20 @@ python app.py
 🌐 http://localhost:5000
 ```
 
+**可选：启用 AI 增强**
+```bash
+# 安装 AI 依赖（可选）
+pip install openai  # 或 anthropic
+
+# 设置 API 密钥
+export OPENAI_API_KEY="your-key-here"
+export ENABLE_AI=true
+
+# 重启服务器
+python app.py
+```
+查看 [AI_SETUP.md](AI_SETUP.md) 了解详细配置。
+
 </details>
 
 ---
@@ -508,7 +522,8 @@ python3 test_analyzer.py
 - ✅ GDB、陷阱帧、页表分析
 - ✅ x86 和 RISC-V 支持
 - ✅ 基于 Web 的界面
-- ✅ 假设引擎
+- ✅ 基于规则的假设引擎
+- ✅ **可选** AI 增强分析（GPT-4/Claude）
 
 ### 🎯 V2.0（计划中）
 - [ ] 实时 GDB 集成（通过 MI 协议）

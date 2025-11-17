@@ -13,8 +13,11 @@ from analyzers.hypothesis_engine import HypothesisEngine
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)  # Enable CORS for development
 
+# Check if AI enhancement should be enabled
+ENABLE_AI = os.environ.get('ENABLE_AI', 'false').lower() == 'true'
+
 # Initialize the hypothesis engine
-engine = HypothesisEngine()
+engine = HypothesisEngine(enable_ai=ENABLE_AI)
 
 
 @app.route('/')
@@ -51,7 +54,9 @@ def analyze():
             'gdb_analysis': result.get('gdb_analysis'),
             'trapframe_analysis': result.get('trapframe_analysis'),
             'pagetable_analysis': result.get('pagetable_analysis'),
-            'all_findings': result.get('all_findings', [])
+            'all_findings': result.get('all_findings', []),
+            'ai_insights': result.get('ai_insights'),  # AI 增强的见解
+            'ai_enabled': result.get('ai_enabled', False)
         }
 
         return jsonify(response)
@@ -75,6 +80,7 @@ if __name__ == '__main__':
 
     print(f"Starting OS Debugging Assistant on port {port}")
     print(f"Debug mode: {debug}")
+    print(f"AI Enhancement: {'Enabled ✓' if ENABLE_AI and engine.ai_agent else 'Disabled'}")
     print(f"Access the application at: http://localhost:{port}")
 
     app.run(host='0.0.0.0', port=port, debug=debug)
