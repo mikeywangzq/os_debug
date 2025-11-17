@@ -1,0 +1,27 @@
+Example 3: x86 Page Fault
+
+This is a classic page fault on x86 architecture.
+
+GDB Backtrace:
+--------------
+#0  0x80103a2e in trap (tf=0x8dfffe8c) at trap.c:37
+#1  0x8010392c in alltraps () at trapasm.S:20
+#2  0x8dfffe8c in ?? ()
+
+Trapframe:
+----------
+trap 14 err 6
+eip 80104f3a esp 8dfffeb8 ss 10
+eax 0 ebx 80112fd0 ecx 8dffffb4 edx 1
+esi 801140c0 edi 0 ebp 8dfffee8 eflags 286
+oesp 8dfffe90
+cr2 0x8
+
+Analysis:
+The trap number is 14 (page fault). The error code is 6, which decodes to:
+- P (bit 0) = 0: page not present
+- W (bit 1) = 1: write operation
+- U (bit 2) = 1: user mode
+
+CR2 (faulting address) is 0x8, very close to NULL, indicating a null pointer
+dereference where we're trying to access a struct member at offset 8.

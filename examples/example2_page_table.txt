@@ -1,0 +1,16 @@
+Example 2: Page Table Misconfiguration
+
+This example shows a page table with security issues.
+
+Page Table Dump:
+----------------
+VA 0x0000000000000000 -> PA 0x0000000087f6e000 | Flags: P W U
+VA 0x0000000000001000 -> PA 0x0000000087f6d000 | Flags: P W U
+VA 0x0000000000002000 -> PA 0x0000000087f6c000 | Flags: P W U
+VA 0x0000000080000000 -> PA 0x0000000080000000 | Flags: P W U
+VA 0x0000000080001000 -> PA 0x0000000080001000 | Flags: P W U
+VA 0x0000000080002000 -> PA 0x0000000080002000 | Flags: P W U
+VA 0x0000000010000000 -> PA 0x0000000010000000 | Flags: P W
+
+The issue here is that kernel space (0x80000000 and above) is marked with
+the U (user) flag, which means user programs can access kernel memory!
