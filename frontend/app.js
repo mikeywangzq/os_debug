@@ -5,13 +5,29 @@
 // API endpoint
 const API_URL = window.location.origin + '/api/analyze';
 
-// DOM elements
+// DOM elements - Static Analysis
 const debugInput = document.getElementById('debugInput');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const clearBtn = document.getElementById('clearBtn');
 const exampleBtn = document.getElementById('exampleBtn');
 const copyBtn = document.getElementById('copyBtn');
 const outputArea = document.getElementById('outputArea');
+
+// DOM elements - Real-time GDB
+const connectGdbBtn = document.getElementById('connectGdbBtn');
+const disconnectGdbBtn = document.getElementById('disconnectGdbBtn');
+const gdbTarget = document.getElementById('gdbTarget');
+const clearOutputBtn = document.getElementById('clearOutputBtn');
+const continueBtn = document.getElementById('continueBtn');
+const stepOverBtn = document.getElementById('stepOverBtn');
+const stepIntoBtn = document.getElementById('stepIntoBtn');
+const getBacktraceBtn = document.getElementById('getBacktraceBtn');
+const getRegistersBtn = document.getElementById('getRegistersBtn');
+const setBreakpointBtn = document.getElementById('setBreakpointBtn');
+const breakpointLocation = document.getElementById('breakpointLocation');
+
+// Initialize GDB Client
+let gdbClient = null;
 
 // Example debugging output
 const EXAMPLE_INPUT = `#0  0x0000000080002a9e in panic () at kernel/printf.c:127
@@ -320,6 +336,146 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ============================================
+// Tab Switching
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Setup tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.dataset.tab;
+
+            // Update tab buttons
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update tab contents
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabName}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+
+            // Initialize GDB client when switching to real-time tab
+            if (tabName === 'realtime' && !gdbClient) {
+                initializeGDBClient();
+            }
+        });
+    });
+});
+
+// ============================================
+// Real-time GDB Event Handlers
+// ============================================
+function initializeGDBClient() {
+    if (typeof GDBClient === 'undefined') {
+        console.error('GDBClient not loaded. Make sure gdb_client.js is included.');
+        return;
+    }
+
+    gdbClient = new GDBClient();
+    console.log('GDB Client initialized');
+}
+
+// GDB Connection
+if (connectGdbBtn) {
+    connectGdbBtn.addEventListener('click', () => {
+        if (!gdbClient) {
+            initializeGDBClient();
+        }
+
+        const target = gdbTarget.value.trim();
+        if (!target) {
+            alert('Please enter a target (e.g., localhost:1234 or /path/to/program)');
+            return;
+        }
+
+        gdbClient.connectToTarget(target);
+    });
+}
+
+if (disconnectGdbBtn) {
+    disconnectGdbBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.disconnect();
+        }
+    });
+}
+
+// Clear output
+if (clearOutputBtn) {
+    clearOutputBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.clearOutput();
+        }
+    });
+}
+
+// Control buttons
+if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.continue();
+        }
+    });
+}
+
+if (stepOverBtn) {
+    stepOverBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.stepOver();
+        }
+    });
+}
+
+if (stepIntoBtn) {
+    stepIntoBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.stepInto();
+        }
+    });
+}
+
+// Info buttons
+if (getBacktraceBtn) {
+    getBacktraceBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.getBacktrace();
+        }
+    });
+}
+
+if (getRegistersBtn) {
+    getRegistersBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            gdbClient.getRegisters();
+        }
+    });
+}
+
+// Breakpoint
+if (setBreakpointBtn) {
+    setBreakpointBtn.addEventListener('click', () => {
+        if (gdbClient) {
+            const location = breakpointLocation.value.trim();
+            gdbClient.setBreakpoint(location);
+        }
+    });
+}
+
+// Allow Enter key for breakpoint location
+if (breakpointLocation) {
+    breakpointLocation.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            setBreakpointBtn.click();
+        }
+    });
 }
 
 // Initial state

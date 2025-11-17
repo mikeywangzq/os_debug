@@ -2,6 +2,7 @@
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from flask_socketio import SocketIO
 import os
 import sys
 
@@ -9,15 +10,25 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from analyzers.hypothesis_engine import HypothesisEngine
+from gdb.websocket_handler import GDBSessionManager, register_websocket_handlers
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)  # Enable CORS for development
+
+# Initialize SocketIO with CORS support
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 # Check if AI enhancement should be enabled
 ENABLE_AI = os.environ.get('ENABLE_AI', 'false').lower() == 'true'
 
 # Initialize the hypothesis engine
 engine = HypothesisEngine(enable_ai=ENABLE_AI)
+
+# Initialize GDB session manager
+gdb_session_manager = GDBSessionManager(socketio)
+
+# Register WebSocket handlers
+register_websocket_handlers(socketio, gdb_session_manager)
 
 
 @app.route('/')
@@ -81,6 +92,8 @@ if __name__ == '__main__':
     print(f"Starting OS Debugging Assistant on port {port}")
     print(f"Debug mode: {debug}")
     print(f"AI Enhancement: {'Enabled ✓' if ENABLE_AI and engine.ai_agent else 'Disabled'}")
+    print(f"Real-time GDB Integration: Enabled ✓")
     print(f"Access the application at: http://localhost:{port}")
 
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    # Use socketio.run() instead of app.run() for WebSocket support
+    socketio.run(app, host='0.0.0.0', port=port, debug=debug)
