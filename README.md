@@ -11,7 +11,7 @@
 
 *几秒内将神秘的内核崩溃转化为可操作的见解*
 
-[功能特性](#-核心功能) • [快速开始](#-快速开始) • [使用指南](#-使用指南) • [示例场景](#-真实场景示例) • [系统架构](#-系统架构)
+**📚 [文档中心](docs/README.md)** | **🚀 [快速开始](#-快速开始)** | **📖 [使用指南](#-使用指南)** | **💡 [示例场景](#-真实场景示例)**
 
 ---
 
@@ -44,7 +44,22 @@
 </tr>
 </table>
 
-**[📖 查看实时 GDB 使用指南](docs/GDB_INTEGRATION_GUIDE.md)** | **[🏗️ 技术设计文档](docs/GDB_INTEGRATION_DESIGN.md)**
+**🎓 v2.0 快速体验**:
+```bash
+# 1. 安装依赖
+pip3 install -r backend/requirements.txt
+
+# 2. 测试 GDB 集成
+python3 test_gdb_integration.py
+
+# 3. 启动服务器
+python3 backend/app.py
+
+# 4. 浏览器访问 http://localhost:5000
+# 5. 点击 "⚡ Real-time GDB" 标签页开始使用！
+```
+
+**📖 详细文档**: [使用指南](docs/GDB_INTEGRATION_GUIDE.md) • [技术设计](docs/GDB_INTEGRATION_DESIGN.md) • [发布说明](V2.0_RELEASE_NOTES.md)
 
 ---
 
@@ -230,7 +245,50 @@ python app.py
 
 ## 📖 使用指南
 
-### 🎬 简单的 3 步工作流
+### 🎯 两种使用模式
+
+**OS 调试助手提供两种互补的调试模式：**
+
+<table>
+<tr>
+<th width="50%">📝 静态分析模式</th>
+<th width="50%">⚡ 实时 GDB 模式</th>
+</tr>
+<tr>
+<td>
+
+**适用场景：**
+- 分析已有的调试输出
+- 事后分析崩溃日志
+- 快速检查页表/寄存器
+
+**工作流程：**
+1. 复制调试输出
+2. 粘贴到工具
+3. 点击分析
+4. 获得见解
+
+</td>
+<td>
+
+**适用场景：** (v2.0 新增)
+- 实时调试运行中的程序
+- 交互式单步调试
+- 自动捕获崩溃
+
+**工作流程：**
+1. 连接到 GDB
+2. 设置断点
+3. 运行程序
+4. 自动分析崩溃
+
+</td>
+</tr>
+</table>
+
+---
+
+### 🎬 静态分析：简单的 3 步工作流
 
 ```mermaid
 graph LR
@@ -282,6 +340,38 @@ graph LR
 | 🟢 RISC-V | ✅ 完全支持 | xv6-riscv |
 | 🔶 ARM | ⏳ 计划中 | 未来版本 |
 | 🟠 MIPS | ⏳ 计划中 | 未来版本 |
+
+### ⚡ 实时 GDB 快速示例 (v2.0)
+
+**场景：调试 xv6 内核崩溃**
+
+```bash
+# 终端 1: 启动 xv6 调试环境
+cd xv6-riscv
+make qemu-gdb
+
+# 终端 2: 启动 GDB
+riscv64-linux-gnu-gdb kernel/kernel
+(gdb) target remote localhost:1234
+
+# 浏览器: http://localhost:5000
+# 1. 点击 "⚡ Real-time GDB" 标签
+# 2. Target: localhost:1234
+# 3. 点击 "Connect" - 状态变为绿色 ✓
+# 4. 点击 "Set Breakpoint" - 输入 "panic"
+# 5. 点击 "Continue"
+# 6. 在 xv6 中触发错误
+# 7. 🎉 系统自动捕获并分析！
+```
+
+**输出效果：**
+- 🟢 实时显示连接状态
+- 🔴 自动检测到 SIGSEGV
+- 📊 自动显示调用栈和寄存器
+- 🤖 自动生成假设和建议
+- ⚡ 全程无需手动复制粘贴！
+
+👉 [查看完整 GDB 使用教程](docs/GDB_INTEGRATION_GUIDE.md)
 
 ---
 
@@ -632,6 +722,29 @@ python3 test_analyzer.py
 3. 提交你的更改（`git commit -m '添加惊人功能'`）
 4. 推送到分支（`git push origin feature/amazing-feature`）
 5. 打开 Pull Request
+
+---
+
+## 📚 完整文档索引
+
+<div align="center">
+
+| 📖 文档类型 | 📝 文档名称 | 📌 说明 |
+|------------|------------|---------|
+| **🏠 主文档** | [README.md](README.md) | 项目总览、安装和快速开始 |
+| **📚 文档中心** | [docs/README.md](docs/README.md) | 所有文档的导航中心 ⭐ |
+| | | |
+| **🚀 v2.0 文档** | [GDB 集成使用指南](docs/GDB_INTEGRATION_GUIDE.md) | 实时 GDB 功能详细使用教程 |
+| | [GDB 集成技术设计](docs/GDB_INTEGRATION_DESIGN.md) | 系统架构、数据流、API 文档 |
+| | [v2.0 发布说明](V2.0_RELEASE_NOTES.md) | 完整功能清单和更新内容 |
+| | [v2.0 开发计划](V2_PLAN.md) | 路线图和后续功能计划 |
+| | | |
+| **📋 其他文档** | [AI 配置指南](AI_SETUP.md) | AI 增强功能设置教程 |
+| | [测试报告](TESTING.md) | Bug 修复记录和测试方法 |
+
+**💡 提示**: 如果不确定看哪个文档，先访问 [📚 文档中心](docs/README.md)
+
+</div>
 
 ---
 
